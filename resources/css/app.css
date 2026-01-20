@@ -1,0 +1,24 @@
+@import 'tailwindcss';
+@plugin "daisyui";
+
+/* --- ປະກາດ Font Face --- */
+@font-face {
+    font-family: 'NotoSerifLao';
+    src: url('../assets/fonts/NotoSerifLao_Condensed-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+
+
+@theme {
+    /* --- ເພີ່ມ Font ທີ່ເຮົາປະກາດໄວ້ເຂົ້າໃນລະບົບ --- */
+    --font-sans: 'NotoSerifLao', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
