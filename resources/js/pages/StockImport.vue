@@ -10,7 +10,7 @@
                     <input type="text" class="grow" placeholder="ຄົ້ນຫາ" />
                 </label>
 
-                <button class="btn btn-dash btn-info" @click="addeditproduct()"><PlusIcon class="w-5 h-5"/> ເພີ່ມສິນຄ້າໃໝ່</button>
+                <button class="btn btn-dash btn-info" @click="importeditproduct()"><PlusIcon class="w-5 h-5"/> ນຳເຂົ້າສິນຄ້າ</button>
 
             </div>
 
@@ -22,11 +22,12 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>ຮູບ</th>
+                    <th>ວັນທີ່ນຳເຂົ້າ</th>
                     <th>ຊື່ສິນຄ້າ</th>
-                    <th>ໝວດໝູ່</th>
                     <th>ຈຳນວນ</th>
-                    <th>ລາຄາຂາຍ</th>
+                    <th>ລາຄາຕົ້ນທຶນ</th>
+                    <th>ເປັນເງິນ</th>
+                    <th>ຜູ້ນຳເຂົ້າ</th>
                     <th>ຈັດການ</th>
                 </tr>
                 </thead>
@@ -34,11 +35,12 @@
                 <!-- row 1 -->
                 <tr v-for="item in 10" :key="item">
                     <th>1</th>
-                    <td></td>
+                    <td>12/12/2025</td>
                     <td>ເບຍລາວ</td>
-                    <td>ເບຍ</td>
                     <td>10</td>
-                    <td>100,000</td>
+                    <td>10,000</td>
+                    <td>1,000,000</td>
+                    <td>Admin</td>
                     <td class=" gap-2 flex ">
                     <button class="btn btn-info p-2"><PencilSquareIcon class="w-4 h-4"/></button>
                     <button class="btn btn-error p-2"><TrashIcon class="w-4 h-4"/></button>
@@ -53,54 +55,45 @@
       </div>
 
       <!-- Modal -->
-        <dialog id="AddEditProduct" class="modal" ref="addeditpro" >
+        <dialog id="ImportEditProduct" class="modal" ref="importeditpro" >
             <div class="modal-box">
                 <h3 class="text-lg font-bold">ແບບຟອມ</h3>
                 
                 <form class="grid grid-cols-1 gap-4 mt-4">
 
-                    <div class="flex justify-center">
-                        <div class="avatar">
-                            <div class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                                <img src="https://placeimg.com/192/192/people" />
-                            </div>
-                        </div>
-                    </div>
-
-                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+                    
+                     <div>
                         <label class="label">
-                            <span class="label-text">ຊື່ສິນຄ້າ</span>
-                        </label>
-                        <input type="text" placeholder="ຊື່ສິນຄ້າ" class="input input-bordered w-full" />
-                    </div>
-                    <div>
-                        <label class="label">
-                            <span class="label-text">ໝວດໝູ່</span>
+                            <span class="label-text">ເລືອກສິນຄ້າ</span>
                         </label>    
                         <select class="select select-bordered w-full">
-                            <option disabled selected>ເລືອກໝວດໝູ່</option>
+                            <option disabled selected>ເລືອກ</option>
                             <option>ເບຍ</option>
                             <option>ເຄື່ອງດື່ມ</option>
                             <option>ອາຫານ</option>
                         </select>
                     </div>
+
                     <div>
                         <label class="label">
-                            <span class="label-text">ຫົວໜ່ວຍ</span>
-                        </label>    
-                        <select class="select select-bordered w-full">
-                            <option disabled selected>ເລືອກຫົວໜ່ວຍ</option>
-                            <option>ແກ້ວ</option>
-                            <option>ຂອງແພງ</option>
-                            <option>ລູກ</option>
-                        </select>
-                    </div>  
-                    <div>
-                        <label class="label">
-                            <span class="label-text">ລາຄາຂາຍ</span>
+                            <span class="label-text">ຈຳນວນ</span>
                         </label>
-                        <input type="number" placeholder="ລາຄາຂາຍ" class="input input-bordered w-full" />   
+                        <input type="text" placeholder="ຈຳນວນ" class="input input-bordered w-full" />
+                    </div>
+
+                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                   
+                    <div>
+                        <label class="label">
+                            <span class="label-text">ລາຄາຕົ້ນທຶນຕໍ່ໜ່ວຍ</span>
+                        </label>
+                        <input type="number" placeholder="ລາຄາຕົ້ນທຶນຕໍ່ໜ່ວຍ" class="input input-bordered w-full" />   
+                    </div>
+                    <div>
+                        <label class="label">
+                            <span class="label-text">ລາຄາຂາຍໃໝ່</span>
+                        </label>
+                        <input type="number" placeholder="ລາຄາຂາຍໃໝ່" class="input input-bordered w-full" />   
                     </div>
                       </div>
                       <label>ລາຍລະອຽດ:</label>
@@ -125,17 +118,17 @@
     import {  MagnifyingGlassIcon, PlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline';
     import { ref } from 'vue';
 
-    const addeditpro = ref(null);
+    const importeditpro = ref(null);
 
 
     // function ----------------------------
 
-    const addeditproduct = () => {
-        addeditpro.value.showModal();
+    const importeditproduct = () => {
+        importeditpro.value.showModal();
     }
 
     const closemodal = () => {
-        addeditpro.value.close();
+        importeditpro.value.close();
     }
 
 </script>
