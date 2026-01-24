@@ -15,10 +15,10 @@
                         <!-- Email/Username -->
                         <div>
                             <label class="label">
-                                <span class="label-text font-semibold">ອີເມວ ຫຼື ຊື່ຜູ້ໃຊ້</span>
+                                <span class="label-text font-semibold">ອີເມວ</span>
                             </label>
                             <input 
-                                type="text" 
+                                type="email" 
                                 placeholder="user@example.com"
                                 v-model="form.email"
                                 class="input input-bordered w-full"
@@ -32,7 +32,7 @@
                                 <span class="label-text font-semibold">ລະຫັດຜ່ານ</span>
                             </label>
                             <input 
-                                :type="showPassword ? 'text' : 'password'"
+                                type="password"
                                 placeholder="ກະລຸນາປ້ອນລະຫັດຜ່ານ"
                                 v-model="form.password"
                                 class="input input-bordered w-full"
@@ -40,18 +40,11 @@
                             />
                         </div>
 
-                        <!-- Remember Me & Forgot Password -->
-                        <div class="flex justify-between items-center">
-                            <label class="label cursor-pointer">
-                                <input 
-                                    type="checkbox" 
-                                    v-model="form.remember"
-                                    class="checkbox checkbox-sm checkbox-primary"
-                                />
-                                <span class="label-text ml-2">ຈື່ໄວ້</span>
-                            </label>
-                            <a href="#" class="link link-primary text-sm">ລືມລະຫັດຜ່ານ?</a>
+                        <!-- Error Message -->
+                        <div v-if="errorMessage" class="text-error text-sm mt-2">
+                           {{ errorMessage }}
                         </div>
+
 
                         <!-- Login Button -->
                         <button 
@@ -64,35 +57,20 @@
                         </button>
                     </form>
 
-                    <!-- Divider -->
-                    <div class="divider">ຫຼື</div>
+                     <!-- Divider -->
+                     <div class="divider">ຫຼື</div>
 
                     <!-- Demo Login -->
                     <div class="space-y-2">
-                        <p class="text-center text-sm text-gray-600 mb-3">ໃຊ້ຂໍ້ມູນທົດສອບ:</p>
-                        <div class="bg-base-200 p-3 rounded text-sm">
-                            <p><strong>ຊື່ຜູ້ໃຊ້:</strong> admin</p>
-                            <p><strong>ລະຫັດຜ່ານ:</strong> password</p>
-                        </div>
+                        <p class="text-center text-sm text-gray-600 mb-3">ບໍ່ມີບັນຊີ? <a href="#" class="link link-primary">ລົງທະບຽນ</a></p>
                     </div>
 
-                    <!-- Error Message -->
-                    <div v-if="errorMessage" class="alert alert-error mt-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l-2-2m0 0l-2-2m2 2l2-2m-2 2l-2 2m2-2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <span>{{ errorMessage }}</span>
-                    </div>
-
-                    <!-- Success Message -->
-                    <div v-if="successMessage" class="alert alert-success mt-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <span>{{ successMessage }}</span>
-                    </div>
                 </div>
             </div>
 
             <!-- Footer -->
             <div class="text-center mt-6 text-base-100">
-                <p class="text-sm">© 2026 MiniPOS. ສະงວນສິດ.</p>
+                <p class="text-sm">© 2026 MiniPOS. ສະງວນສິດ.</p>
             </div>
         </div>
     </div>
@@ -100,53 +78,31 @@
 
 <script setup>
     import { ref } from 'vue';
+    import { useRouter } from 'vue-router'
+    import { useAuthStore } from '../../stores/auth';
+
+    const router = useRouter()
+    const authStore = useAuthStore()
 
     const form = ref({
-        email: '',
-        password: '',
-        remember: false
+        email: 'admin@example.com',
+        password: 'password',
     });
 
-    const showPassword = ref(false);
     const isLoading = ref(false);
     const errorMessage = ref('');
-    const successMessage = ref('');
 
     const handleLogin = async () => {
         errorMessage.value = '';
-        successMessage.value = '';
-
-        // Validation
-        if (!form.value.email || !form.value.password) {
-            errorMessage.value = 'ກະລຸນາປ້ອນຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານ';
-            return;
-        }
-
         isLoading.value = true;
-
         try {
-            // Demo login (replace with actual API call)
-            if (form.value.email === 'admin' && form.value.password === 'password') {
-                successMessage.value = 'ເຂົ້າສູ່ລະບົບສະເລັດ!';
-                
-                // Simulate API delay
-                setTimeout(() => {
-                    // Redirect to dashboard
-                    console.log('Redirecting to dashboard...');
-                    // router.push('/dashboard');
-                }, 1500);
-            } else {
-                errorMessage.value = 'ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ';
-            }
+            await authStore.login(form.value)
+            router.push('/')
         } catch (error) {
-            errorMessage.value = 'ເກີດຄວາມຜິດພາດ ກະລຸນາລອງໃໝ່';
+            errorMessage.value = 'ອີເມວ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ';
             console.error('Login error:', error);
         } finally {
             isLoading.value = false;
         }
     };
 </script>
-
-<style lang="scss" scoped>
-    
-</style>

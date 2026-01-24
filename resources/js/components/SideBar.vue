@@ -64,7 +64,7 @@ import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import { 
   HomeIcon, CubeIcon, ArrowDownTrayIcon, 
-  ShoppingCartIcon, ChartBarIcon, Cog6ToothIcon,
+  ShoppingCartIcon, ChartBarIcon, Cog6ToothIcon, UsersIcon, ClipboardDocumentListIcon, BanknotesIcon
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -80,6 +80,9 @@ const menuItems = [
   { name: 'ນຳເຂົ້າ', path: '/stock-import', icon: ArrowDownTrayIcon },
   { name: 'ຂາຍ', path: '/pos', icon: ShoppingCartIcon },
   { name: 'ລາຍງານ', path: '/reports', icon: ChartBarIcon },
+  { name: 'ລູກຄ້າ', path: '/customers', icon: UsersIcon },
+  { name: 'ຜູ້ສະໜອງ', path: '/suppliers', icon: ClipboardDocumentListIcon },
+  { name: 'ລາຍຈ່າຍ', path: '/expenses', icon: BanknotesIcon },
   { 
     name: 'ຕັ້ງຄ່າ', 
     icon: Cog6ToothIcon, 
