@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('stock_imports', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('supplier_id')->constrained('suppliers')->onDelete('cascade');
+            $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('invoice_number')->unique();
             $table->decimal('total_cost', 10, 2);

@@ -43,8 +43,8 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
-            $imagePath = $image->storeAs('public/products', $imageName);
-            $validated['image'] = Storage::url($imagePath);
+            $imagePath = $image->storeAs('products', $imageName, 'public'); // Store relative path in public disk
+            $validated['image'] = $imagePath; // Store relative path in DB
         }
 
         $product = Product::create($validated);
@@ -70,16 +70,17 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             // Delete old image if it exists
             if ($product->image) {
-                Storage::delete(str_replace('/storage', 'public', $product->image));
+                Storage::disk('public')->delete($product->image);
             }
 
             $image = $request->file('image');
             $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
-            $imagePath = $image->storeAs('public/products', $imageName);
-            $validated['image'] = Storage::url($imagePath);
+            $imagePath = $image->storeAs('products', $imageName, 'public'); // Store relative path in public disk
+            $validated['image'] = $imagePath; // Store relative path in DB
+
         } elseif ($request->input('image_removed')) { // Handle explicit image removal from frontend
             if ($product->image) {
-                Storage::delete(str_replace('/storage', 'public', $product->image));
+                Storage::disk('public')->delete($product->image);
                 $validated['image'] = null;
             }
         }
@@ -96,7 +97,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         if ($product->image) {
-            Storage::delete(str_replace('/storage', 'public', $product->image));
+            Storage::disk('public')->delete($product->image);
         }
         $product->delete();
 

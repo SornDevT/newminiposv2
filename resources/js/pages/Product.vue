@@ -38,7 +38,10 @@ const getFullImageUrl = (imagePath) => {
     if (imagePath.startsWith('http') || imagePath.startsWith('data:')) {
         return imagePath;
     }
-    return `/storage/${imagePath}`;
+    if (imagePath.startsWith('/storage/')) {
+        return `${window.location.origin}${imagePath}`;
+    }
+    return `${window.location.origin}/storage/${imagePath}`;
 };
 
 // Methods
@@ -91,11 +94,7 @@ const addeditproduct = (product = null) => {
     if (product) {
         isEditMode.value = true;
         productForm.value = { ...product };
-        if (product.image && !product.image.startsWith('http') && !product.image.startsWith('data:')) {
-            imagePreviewUrl.value = `/storage/${product.image}`;
-        } else {
-            imagePreviewUrl.value = product.image;
-        }
+        imagePreviewUrl.value = getFullImageUrl(product.image);
         imageFile.value = null;
     } else {
         isEditMode.value = false;
@@ -164,17 +163,9 @@ const saveProduct = async () => {
         if (isEditMode.value) {
             // Laravel needs _method to be 'PUT' for FormData requests
             formData.append('_method', 'PUT');
-            response = await axios.post(`/products/${productForm.value.id}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            response = await axios.post(`/products/${productForm.value.id}`, formData);
         } else {
-            response = await axios.post('/products', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            response = await axios.post('/products', formData);
         }
         
         console.log('Save success:', response.data);
@@ -275,8 +266,6 @@ onMounted(() => {
                                 <div class="w-12 h-12 rounded-full">
                                     <img :src="getFullImageUrl(product?.image)" :alt="product?.name" />
                                 </div>
-                                <div style="font-size: 8px; color: gray;">Raw: {{ product?.image }}</div>
-                                <div style="font-size: 8px; color: blue;">Full: {{ getFullImageUrl(product?.image) }}</div>
                             </div>
                         </td>
                         <td>{{ product.name }}</td>
