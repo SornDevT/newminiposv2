@@ -27,6 +27,7 @@ class StoreStockImportRequest extends FormRequest
             'cost_price_per_unit' => 'required|numeric|min:0',
             'new_selling_price' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
+            'supplier_id' => 'required|exists:suppliers,id',
             // Assuming import_date and user_id will be handled by the controller
             // Assuming supplier_id and invoice_number might be optional or generated
         ];

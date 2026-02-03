@@ -45,8 +45,9 @@ const getFullImageUrl = (imagePath) => {
 };
 
 // Methods
-const fetchProducts = async (page = 1, search = '') => {
+const fetchProducts = async (page = -1, search = '') => {
     loading.value = true;
+    console.log(page, search);
     try {
         const response = await axios.get('/products', {
             params: {
@@ -54,11 +55,11 @@ const fetchProducts = async (page = 1, search = '') => {
                 search
             }
         });
-        products.value = response.data.data;
+        products.value = response.data;
         // Debugging line
-        products.value.forEach(p => console.log('Product ID:', p.id, 'Image Path:', p.image));
-        currentPage.value = response.data.current_page;
-        lastPage.value = response.data.last_page;
+        // products.value.forEach(p => console.log('Product ID:', p.id, 'Image Path:', p.image));
+        // currentPage.value = response.data.current_page;
+        // lastPage.value = response.data.last_page;
     } catch (error) {
         console.error('Error fetching products:', error);
         dialogStore.warning({ title: 'ຂໍ້ຜິດພາດ', message: 'ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດຂໍ້ມູນສິນຄ້າ' });
@@ -234,6 +235,11 @@ onMounted(() => {
                         <MagnifyingGlassIcon class="w-5 h-5"/>
                         <input type="text" class="grow" placeholder="ຄົ້ນຫາ" v-model="searchQuery" />
                     </label>
+                    <button class="btn btn-info" @click="openImportModal"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375H12a1.125 1.125 0 0 1-1.125-1.125V1.5M19.5 14.25H12m7.5 0 3 3m-3-3 3-3m-8.25 6.75H12" />
+</svg>
+
+ ເພີ່ມຈາກ Excel</button>
                     <button class="btn btn-dash btn-info" @click="addeditproduct()"><PlusIcon class="w-5 h-5"/> ເພີ່ມສິນຄ້າໃໝ່</button>
                 </div>
             </div>
@@ -386,6 +392,37 @@ onMounted(() => {
                             ບັນທຶກ
                         </button>
                         <button type="button" class="btn" @click="closemodal">ຍົກເລີກ</button>
+                    </div>
+                </form>
+            </div>
+        </dialog>
+
+        <!-- Import Product Modal -->
+        <dialog id="ImportProduct" class="modal" ref="importModal">
+            <div class="modal-box">
+                <h3 class="text-lg font-bold">ນຳເຂົ້າສິນຄ້າຈາກ Excel</h3>
+                <form class="mt-4" @submit.prevent="importProducts">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">ເລືອກໄຟລ໌ Excel</span>
+                        </label>
+                        <input type="file" class="file-input file-input-bordered w-full" accept=".xlsx, .xls" @change="handleImportFileChange" />
+                        <label v-if="importErrors.file && importErrors.file.length" class="label text-error">{{ importErrors.file[0] }}</label>
+                        <div v-if="importErrors.failures && importErrors.failures.length" class="mt-4 text-error">
+                            <p>ການນຳເຂົ້າສຳເລັດດ້ວຍບາງຂໍ້ຜິດພາດ:</p>
+                            <ul>
+                                <li v-for="(failure, index) in importErrors.failures" :key="index">
+                                    Row {{ failure.row }}: {{ failure.errors.join(', ') }} (Values: {{ JSON.stringify(failure.values) }})
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-action">
+                        <button type="submit" class="btn me-2 btn-primary" :disabled="importLoading || !fileToImport">
+                            <span v-if="importLoading" class="loading loading-spinner"></span>
+                            ນຳເຂົ້າ
+                        </button>
+                        <button type="button" class="btn" @click="closeImportModal">ຍົກເລີກ</button>
                     </div>
                 </form>
             </div>

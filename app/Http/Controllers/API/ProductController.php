@@ -9,6 +9,9 @@ use App\Http\Requests\StoreProductRequest; // Import the Form Request
 use App\Http\Requests\UpdateProductRequest; // Import the Update Form Request
 use Illuminate\Support\Facades\Storage; // Import Storage Facade
 use Illuminate\Support\Str; // Import Str Facade
+use Maatwebsite\Excel\Facades\Excel; // Add this line
+use App\Imports\ProductImport; // Add this line
+
 
 class ProductController extends Controller
 {
@@ -27,8 +30,11 @@ class ProductController extends Controller
                           $q->where('name', 'like', '%' . $search . '%');
                       });
             })
-            ->latest()
-            ->paginate(10);
+            ->latest();
+        if ($request->get('page') === '-1') {
+            return $products->get();
+        }
+        $products = $products->paginate(10);
 
         return response()->json($products);
     }
@@ -102,5 +108,35 @@ class ProductController extends Controller
         $product->delete();
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * Import products from an Excel file.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls',
+        ]);
+
+        $import = new ProductImport();
+        Excel::import($import, $request->file('file'));
+
+        if ($import->getFailures()->isNotEmpty()) {
+            $errors = $import->getFailures()->map(function ($failure) {
+                return [
+                    'row' => $failure->row(),
+                    'attribute' => $failure->attribute(),
+                    'errors' => $failure->errors(),
+                    'values' => $failure->values(),
+                ];
+            });
+            return response()->json([
+                'message' => 'ການນຳເຂົ້າສຳເລັດດ້ວຍບາງຂໍ້ຜິດພາດ.',
+                'failures' => $errors
+            ], 422);
+        }
+
+        return response()->json(['message' => 'ການນຳເຂົ້າສິນຄ້າສຳເລັດ!']);
     }
 }

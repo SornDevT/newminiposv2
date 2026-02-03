@@ -2,17 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Sale extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'invoice_number',
         'customer_id',
         'user_id',
         'total_amount',
         'discount',
-        'payment_method',
+        'total_received',
+        'change_due',
         'status',
         'sale_date',
     ];
@@ -30,6 +34,11 @@ class Sale extends Model
     public function saleItems()
     {
         return $this->hasMany(SaleItem::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 }
 

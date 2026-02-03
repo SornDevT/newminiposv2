@@ -73,7 +73,7 @@ class StockImportController extends Controller
                 'total_cost' => $validated['quantity'] * $validated['cost_price_per_unit'],
                 'import_date' => now(),
                 'status' => 'completed',
-                // 'supplier_id' => null, // Can be added if frontend provides it
+                'supplier_id' => $validated['supplier_id'], // Can be added if frontend provides it
             ]);
 
             // Create StockImportItem (line item)

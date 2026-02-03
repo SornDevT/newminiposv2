@@ -34,7 +34,7 @@
                     <tr v-else v-for="(expense, index) in expenses" :key="expense.id">
                         <th>{{ (currentPage - 1) * 10 + index + 1 }}</th>
                         <td>{{ expense.description }}</td>
-                        <td>{{ expense.amount.toLocaleString() }}</td>
+                        <td>{{ formatNumber(expense.amount) }}</td>
                         <td>{{ formatDate(expense.expense_date) }}</td>
                         <td>{{ expense.user?.name || 'N/A' }}</td>
                         <td class="gap-2 flex">
@@ -215,6 +215,11 @@ const deleteExpense = async (id) => {
             loading.value = false;
         }
     }
+};
+
+const formatNumber = (value) => {
+    if (isNaN(value)) return 0;
+    return Number(value).toLocaleString('lo-LA');
 };
 
 const formatDate = (dateString) => {
